@@ -2,6 +2,10 @@ library("shiny")
 library("rbokeh")
 library("htmlwidgets")
 
+# ciekawy artykul
+# http://www.pacea.u-bordeaux1.fr/IMG/pdf/AnthropMMD_v101_en.pdf
+# https://www.academia.edu/14001615/A_critical_review_of_the_Mean_Measure_of_Divergence_and_Mahalanobis_Distances_using_artificial_data_and_new_approaches_to_the_estimation_of_biodistances_employing_nonmetric_traits
+
 fluidPage(
   fluidRow(class = "myRow1",
     column(width = 4, h2("Dental Affinities"), p("Link to the article, contact email")),

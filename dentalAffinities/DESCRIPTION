@@ -1,9 +1,9 @@
 Package: dentalAffinities
-Title: What the Package Does (one line, title case)
-Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
-Depends: R (>= 3.3.2)
-License: What license is it under?
+Title: Functions and datasets for the Dental Affinities app
+Version: 0.1
+Authors@R: person("Przemyslaw", "Biecek", email = "przemyslaw.biecek@gmail.com", role = c("aut", "cre"))
+Description: Functions and datasets for the Dental Affinities app
+Depends: R (>= 3.0)
+License: GPL-2
 Encoding: UTF-8
 LazyData: true

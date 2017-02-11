@@ -3,7 +3,9 @@ Title: Functions and datasets for the Dental Affinities app
 Version: 0.1
 Authors@R: person("Przemyslaw", "Biecek", email = "przemyslaw.biecek@gmail.com", role = c("aut", "cre"))
 Description: Functions and datasets for the Dental Affinities app
-Depends: R (>= 3.0)
+Depends:
+    R (>= 3.0)
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
+RoxygenNote: 5.0.1

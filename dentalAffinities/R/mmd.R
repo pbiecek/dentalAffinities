@@ -22,7 +22,9 @@ calculateMMD <- function(M_n, M_p, thetadiff, theta) {
   for (a in seq_along(VarMatrix[1, ])) {
     for (b in seq_along(MMDMatrix[, 1])) {
       for (c in seq_along(MMDMatrix[1, ])) {
-        MMDMatrix[b,c] <- thetadiff(M_n[b,a+1], M_p[b,a+1], M_n[c,a+1], M_p[c,a+1], theta)
+        tmp <- thetadiff(M_n[b,a+1], M_p[b,a+1], M_n[c,a+1], M_p[c,a+1], theta)
+        tmp <- pmin(tmp, 0.01)
+        MMDMatrix[b,c] <- tmp
       }
     }
 
@@ -62,7 +64,9 @@ calculateMMD <- function(M_n, M_p, thetadiff, theta) {
     for (b in seq_along(MMDMatrix[1, ])) {
       MMDVect <- vector("double", length(M_n[1, ]) - 1)
       for (i in seq_along(MMDVect)) {
-        MMDVect[i] <- thetadiff(M_n[a,i+1], M_p[a,i+1], M_n[b,i+1], M_p[b,i+1], theta)
+        tmp <- thetadiff(M_n[a,i+1], M_p[a,i+1], M_n[b,i+1], M_p[b,i+1], theta)
+        tmp <- pmin(tmp, 0.01)
+        MMDVect[i] <- tmp
       }
       MMDMatrix[a, b] <- sum(MMDVect) / length(MMDVect)
     }

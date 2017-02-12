@@ -12,7 +12,7 @@
 #' @export
 
 loadData <- function(file) {
-  file <- "~/GitHub/dentalAffinities/docs/test_file.xlsx"
+#  file <- "~/GitHub/dentalAffinities/docs/test_file.xlsx"
   dat <- read.xlsx(file, 1)
   THRESHOLD <- dat[1,]
   dat <- dat[-1,]

@@ -4,7 +4,7 @@
 #'
 #' @return ggplot2 plot
 #' @export
-#' @importFrom clust agnes
+#' @importFrom cluster agnes
 #' @import ggplot2
 getClust <- function(mat) {
   grupy <- agnes(as.dist(mat), method = "ward")

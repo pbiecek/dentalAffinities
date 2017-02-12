@@ -14,4 +14,5 @@ Imports: openxlsx,
     tidyr,
     ggplot2,
     MASS,
-    cluster
+    cluster,
+    ggdendro

@@ -12,3 +12,14 @@ thetadiff_Grewal <- function(nA,pA,nB,pB, theta) { (theta(nA,pA) - theta(nB,pB))
 
 ## uncorrected formula
 thetadiff_uncorrected <- function(nA,pA,nB,pB, theta) { (theta(nA,pA) - theta(nB,pB))^2 }
+
+get_Mn_Mp <- function(binary_trait_data) {
+ colnames(binary_trait_data)[1:3] <- c("id", "site", "sex")
+ binary_trait_data_long <- gather(binary_trait_data, trait, value, -(1:3))
+ gr <- summarise(group_by(binary_trait_data_long, site, trait),
+           n = length(na.omit(value)),
+           p = mean(value > 0, na.rm=TRUE))
+ Mn <- spread(gr[,c("site","trait", "n")], trait, n)
+ Mp <- spread(gr[,c("site","trait", "p")], trait, p)
+ list(Mn = Mn, Mp = Mp)
+}

@@ -1,6 +1,4 @@
 library("shiny")
-library("rbokeh")
-library("htmlwidgets")
 
 # ciekawy artykul
 # http://www.pacea.u-bordeaux1.fr/IMG/pdf/AnthropMMD_v101_en.pdf
@@ -8,15 +6,9 @@ library("htmlwidgets")
 
 fluidPage(
   fluidRow(class = "myRow1",
-    column(width = 3, h2("Dental Affinities"), p("Link to the article, contact email")),
-    column(width = 3,
-           fileInput('file1', 'Or upload your data in XLSX file',
-                     accept=c('.csv', 'application/xlsx',
-                              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                              '.xlsx')),
-           br(),
-           checkboxInput("button",label = "Example data")
-        ),
+    column(width = 3, h2("Dental Affinities"),
+           p("Link to the article, contact email"),
+           checkboxInput("button",label = "Example data", value = TRUE)),
     column(width = 3,
            selectInput("method_sel", label = "Method selection",
                        choices = c("MMD - Anscombe" = "MMD_ANS_0",
@@ -32,6 +24,19 @@ fluidPage(
                                    "[not ready] PCA - polychoric correlation " = "MAH_PCA"
                        ),
                        selected = "MMD_ANS"),
+           fileInput('file1', 'Upload your data as an XLSX file',
+                      accept=c('.csv', 'application/xlsx',
+                               'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                               '.xlsx'))
+        ),
+    column(width = 3,
+           selectInput("sex_handling", label = "Sex handling",
+                       choices = c("All individuals" = "ALL",
+                                   "Males only" = "MALE",
+                                   "Females only" = "FEMALE",
+                                   "[not ready] Sample-wise selection" = "SAMPLE",
+                                   "[not ready] Predefined selection" = "PRE"
+                       ), selected = "ALL"),
            selectInput("binarisation", label = "Binarization",
                        choices = c("User defined" = "USER",
                                    "Balanced" = "BALANCED",
@@ -48,14 +53,6 @@ fluidPage(
                                    "Average score" = "AVG"
                        ),
                        selected = "ALL"),
-           selectInput("sex_handling", label = "Sex handling",
-                       choices = c("All individuals" = "ALL",
-                                   "Males only" = "MALE",
-                                   "Females only" = "FEMALE",
-                                   "[not ready] Sample-wise selection" = "SAMPLE",
-                                   "[not ready] Predefined selection" = "PRE"
-                       ),
-                       selected = "ALL"),
            selectInput("post_trait", label = "Post-hoc trait selection",
                        choices = c("All traits" = "ALL",
                                    "[not ready] Traits that differentiate" = "DIFF",
@@ -66,7 +63,9 @@ fluidPage(
   fluidRow(
     column(width = 4, plotOutput('ggMDS', width = 400, height = 400)),
     column(width = 4, plotOutput('ggClust', width = 400, height = 400)),
-    column(width = 4, p("Distance matrix"),
+    column(width = 4,
+           downloadLink('downloadData', '* Download matrixes as XLSX file *'),
+           p("Distance matrix"),
            verbatimTextOutput('distSummary'),
            p("SD matrix"),
            verbatimTextOutput('sdSummary'),

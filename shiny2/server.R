@@ -1,19 +1,26 @@
 library("shiny")
 library("dentalAffinities")
 library("MASS")
+library("openxlsx")
 
 function(input, output) {
   # get data
   dataInput <- reactive({
-    if (input$button) {
+    inFile <- input$file1
+    if (input$button & is.null(inFile)) {
       load("df_sample2.rda")
     } else {
-      inFile <- input$file1
       if (is.null(inFile))
         return(NULL)
-      df <- loadData(inFile)
+      df <- loadData(inFile$datapath)
       attr(df, which = "name") = inFile[[1]]
     }
+    # binarisation
+    if (input$binarisation == "USER") {
+      THRESHOLD = df[1,]
+      df <- df[-1,]
+    }
+
     # sex handling
     if (input$sex_handling == "MALE") {
       df <- df[which(df[,3] == "M"),]
@@ -45,6 +52,19 @@ function(input, output) {
         df[,2 + (i-1)/2] <- rowMeans(df[,i+c(-1,0)], na.rm = TRUE)
       }
       df <- df[,1:(2 + (i-1)/2)]
+    }
+    # binarisation
+    if (input$binarisation == "USER") {
+      for (i in 4:ncol(df)) {
+        df[,i] <- (df[,i] >= THRESHOLD[1,i]) + 0
+      }
+    }
+    if (input$binarisation == "BALANCED") {
+      # remove without site
+      df <- df[!is.na(df[,2]),]
+      for (i in 4:ncol(df)) {
+        df[,i] <- (df[,i] >= median(df[,i], na.rm=TRUE)) + 0
+      }
     }
 
     df
@@ -122,5 +142,20 @@ function(input, output) {
       print(round(mat, 5))
     }
   })
+
+  output$downloadData <- downloadHandler(
+    filename = function() {
+      paste('dentalAffinities_', Sys.Date(), '.xlsx', sep='')
+    },
+    content = function(con) {
+      di <- dataInput()
+      if (is.null(di)) {
+        mat <- data.frame("Upload the data first")
+      } else {
+        mat <- getDist()
+        write.xlsx(mat, file = con, row.names = TRUE)
+      }
+    }
+  )
 
 }

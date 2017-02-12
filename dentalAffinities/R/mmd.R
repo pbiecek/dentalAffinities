@@ -10,6 +10,12 @@
 #' @return a list with tree matrices: MMDMatrix - distance, SDMatrix - standard deviation, SigMatrix - significance
 #' @export
 calculateMMD <- function(M_n, M_p, thetadiff, theta) {
+  # remove traits with n == 0
+  ind <- which(!apply(M_n == 0, 2, any))
+  M_p <- M_p[,ind]
+  M_n <- M_n[,ind]
+  # end - remove traits with n == 0
+
   VarMatrix <- M_n[1:2, 2:length(M_n[1, ])]
   MMDMatrix <- matrix(0, length(M_n[, 1]), length(M_n[, 1]))
 
@@ -98,5 +104,5 @@ calculateMMD <- function(M_n, M_p, thetadiff, theta) {
         SigMatrix[a, b] = 1
     }
   }
-  list(MMDMatrix, SDMatrix, SigMatrix)
+  list(MMDMatrix = MMDMatrix, SDMatrix = SDMatrix, SigMatrix = SigMatrix)
 }

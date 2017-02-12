@@ -11,4 +11,6 @@ LazyData: true
 RoxygenNote: 5.0.1
 Imports: openxlsx,
     dplyr,
-    tidyr
+    tidyr,
+    ggplot2,
+    MASS

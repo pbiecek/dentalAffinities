@@ -2,10 +2,10 @@
 #'
 #' @param mat distance matrix
 #'
-#' @return ggplot2 plot
-#' @export
 #' @importFrom cluster agnes
 #' @import ggplot2
+#' @return ggplot2 plot
+#' @export
 getClust <- function(mat) {
   grupy <- agnes(as.dist(mat), method = "ward")
   fviz_dend(grupy, rect = TRUE, main = "Clustering: Ward method") +

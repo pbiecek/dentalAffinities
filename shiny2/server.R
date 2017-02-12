@@ -7,13 +7,46 @@ function(input, output) {
   dataInput <- reactive({
     if (input$button) {
       load("df_sample2.rda")
-      return(df)
+    } else {
+      inFile <- input$file1
+      if (is.null(inFile))
+        return(NULL)
+      df <- loadData(inFile)
+      attr(df, which = "name") = inFile[[1]]
     }
-    inFile <- input$file1
-    if (is.null(inFile))
-      return(NULL)
-    df <- loadData(inFile)
-    attr(df, which = "name") = inFile[[1]]
+    # sex handling
+    if (input$sex_handling == "MALE") {
+      df <- df[which(df[,3] == "M"),]
+    }
+    if (input$sex_handling == "FEMALE") {
+      df <- df[which(df[,3] == "F"),]
+    }
+    # side handling
+    if (input$init_trait == "RIGHT") {
+      df <- df[,c(1:3,seq(4, ncol(df), 2))]
+    }
+    if (input$init_trait == "LEFT") {
+      df <- df[,c(1:3,seq(5, ncol(df), 2))]
+    }
+    if (input$init_trait == "MIN") {
+      for (i in seq(5, ncol(df), 2)) {
+        df[,2 + (i-1)/2] <- pmin(df[,i], df[,i-1], na.rm = TRUE)
+      }
+      df <- df[,1:(2 + (i-1)/2)]
+    }
+    if (input$init_trait == "MAX") {
+      for (i in seq(5, ncol(df), 2)) {
+        df[,2 + (i-1)/2] <- pmax(df[,i], df[,i-1], na.rm = TRUE)
+      }
+      df <- df[,1:(2 + (i-1)/2)]
+    }
+    if (input$init_trait == "AVG") {
+      for (i in seq(5, ncol(df), 2)) {
+        df[,2 + (i-1)/2] <- rowMeans(df[,i+c(-1,0)], na.rm = TRUE)
+      }
+      df <- df[,1:(2 + (i-1)/2)]
+    }
+
     df
   })
 
@@ -62,13 +95,31 @@ function(input, output) {
     dentalAffinities::getClust(mat$MMDMatrix)
   })
 
-  output$textSummary <- renderPrint({
+  output$distSummary <- renderPrint({
     di <- dataInput()
     if (is.null(di)) {
       "Upload data"
     } else {
       mat <- getDist()$MMDMatrix
       print(round(mat, 2))
+    }
+  })
+  output$sdSummary <- renderPrint({
+    di <- dataInput()
+    if (is.null(di)) {
+      "Upload data"
+    } else {
+      mat <- getDist()$SDMatrix
+      print(round(mat, 2))
+    }
+  })
+  output$signifSummary <- renderPrint({
+    di <- dataInput()
+    if (is.null(di)) {
+      "Upload data"
+    } else {
+      mat <- getDist()$SigMatrix
+      print(round(mat, 5))
     }
   })
 

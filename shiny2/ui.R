@@ -8,8 +8,8 @@ library("htmlwidgets")
 
 fluidPage(
   fluidRow(class = "myRow1",
-    column(width = 4, h2("Dental Affinities"), p("Link to the article, contact email")),
-    column(width = 4,
+    column(width = 3, h2("Dental Affinities"), p("Link to the article, contact email")),
+    column(width = 3,
            fileInput('file1', 'Or upload your data in XLSX file',
                      accept=c('.csv', 'application/xlsx',
                               'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -17,58 +17,61 @@ fluidPage(
            br(),
            checkboxInput("button",label = "Example data")
         ),
-    column(width = 2,
-           p("Options:"),
+    column(width = 3,
+           selectInput("method_sel", label = "Method selection",
+                       choices = c("MMD - Anscombe" = "MMD_ANS_0",
+                                   "MMD - Freeman & Tukey" = "MMD_FRE_0",
+                                   "MMD - Anscombe (Freeman & Tukey correction)" = "MMD_ANS_FRE",
+                                   "MMD - Anscombe (Grewal correction)" = "MMD_ANS_GRE",
+                                   "MMD - Freeman & Tukey (Freeman & Tukey correction)" = "MMD_FRE_FRE",
+                                   "MMD - Freeman & Tukey (Grewal correction)" = "MMD_FRE_GRE",
+                                   "[not ready] Mahalanobis - tetrachoric correlation (TMD)" = "MAH_TMD",
+                                   "[not ready] Mahalanobis - ordinal (OMD)" = "MAH_OMD",
+                                   "[not ready] Mahalanobis - corrected ordinal (COMD)" = "MAH_COMD",
+                                   "[not ready] Mahalanobis - Pearson correlation coefficients (RMD)" = "MAH_RMD",
+                                   "[not ready] PCA - polychoric correlation " = "MAH_PCA"
+                       ),
+                       selected = "MMD_ANS"),
+           selectInput("binarisation", label = "Binarization",
+                       choices = c("User defined" = "USER",
+                                   "Balanced" = "BALANCED",
+                                   "[not ready] Highest inter sample" = "HIGH"
+                       ),
+                       selected = "BALANCED")),
+    column(width = 3,
            selectInput("init_trait", label = "Initial trait selection",
                        choices = c("All traits" = "ALL",
                                    "Only right side" = "RIGHT",
                                    "Only left side" = "LEFT",
                                    "Maximum score" = "MAX",
                                    "Minimum score" = "MIN",
-                                   "Average score" = "AVE"
+                                   "Average score" = "AVG"
                        ),
                        selected = "ALL"),
            selectInput("sex_handling", label = "Sex handling",
                        choices = c("All individuals" = "ALL",
                                    "Males only" = "MALE",
                                    "Females only" = "FEMALE",
-                                   "Sample-wise selection" = "SAMPLE",
-                                   "Predefined selection" = "PRE"
+                                   "[not ready] Sample-wise selection" = "SAMPLE",
+                                   "[not ready] Predefined selection" = "PRE"
                        ),
                        selected = "ALL"),
            selectInput("post_trait", label = "Post-hoc trait selection",
                        choices = c("All traits" = "ALL",
-                                   "Traits that differentiate" = "DIFF",
-                                   "Traits with high inter-sample variance" = "VAR"
+                                   "[not ready] Traits that differentiate" = "DIFF",
+                                   "[not ready] Traits with high inter-sample variance" = "VAR"
                        ),
-                       selected = "ALL")),
-    column(width = 2,
-           p("Options:"),
-           selectInput("method_sel", label = "Method selection",
-                       choices = c("MMD - Anscombe" = "MMD_ANS_0",
-                                   "MMD - Anscombe (Freeman & Tukey correction)" = "MMD_ANS_FRE",
-                                   "MMD - Anscombe (Grewal correction)" = "MMD_ANS_GRE",
-                                   "MMD - Freeman & Tukey" = "MMD_FRE_0",
-                                   "MMD - Freeman & Tukey (Freeman & Tukey correction)" = "MMD_FRE_FRE",
-                                   "MMD - Freeman & Tukey (Grewal correction)" = "MMD_FRE_GRE",
-                                   "Mahalanobis - tetrachoric correlation (TMD)" = "MAH_TMD",
-                                   "Mahalanobis - ordinal (OMD)" = "MAH_OMD",
-                                   "Mahalanobis - corrected ordinal (COMD)" = "MAH_COMD",
-                                   "Mahalanobis - Pearson correlation coefficients (RMD)" = "MAH_RMD",
-                                   "PCA - polychoric correlation " = "MAH_PCA"
-                       ),
-                       selected = "MMD_ANS"),
-           selectInput("binarisation", label = "Binarization",
-                       choices = c("User defined" = "USER",
-                                   "Balanced" = "BALANCED",
-                                   "Highest inter sample" = "HIGH"
-                       ),
-                       selected = "BALANCED"))
+                       selected = "ALL"))
     ),
   fluidRow(
-    column(width = 4, plotOutput('ggMDS')),
-    column(width = 4, plotOutput('ggClust')),
-    column(width = 4,  verbatimTextOutput('textSummary'))
+    column(width = 4, plotOutput('ggMDS', width = 400, height = 400)),
+    column(width = 4, plotOutput('ggClust', width = 400, height = 400)),
+    column(width = 4, p("Distance matrix"),
+           verbatimTextOutput('distSummary'),
+           p("SD matrix"),
+           verbatimTextOutput('sdSummary'),
+           p("Significance matrix"),
+           verbatimTextOutput('signifSummary'))
   ),
   tags$head(tags$style("
       .myRow1{background-color: #dddddd;}

@@ -1,5 +1,6 @@
 library("shiny")
 library("dentalAffinities")
+library("MASS")
 
 function(input, output) {
   # get data
@@ -18,10 +19,11 @@ function(input, output) {
 
   # get dist
   getDist <- reactive({
+    res <- NULL
+
     df <- dataInput()
 
     selected <- strsplit(input$method_sel, split="_")[[1]]
-
     if (selected[1] == "MMD") {
       theta <- dentalAffinities::theta_Anscombe
       if (selected[2] == "FRE")
@@ -34,42 +36,10 @@ function(input, output) {
         thetadiff <- dentalAffinities::thetadiff_Grewal
 
       tmp <- dentalAffinities::get_Mn_Mp(df)
-      dentalAffinities::calculateMMD(tmp$Mn, tmp$Mp, thetadiff, theta)
-
+      res <- dentalAffinities::calculateMMD(data.frame(tmp$Mn), as.data.frame(tmp$Mp), thetadiff, theta)
     }
 
-    for (i in 3:ncol(df))
-      df[,i] <- (df[,i] > mean(df[,i], na.rm = TRUE)) + 0
-    dfg <- na.omit(gather(df, variables, values, c(-1, -2)))
-    colnames(dfg) <- c("site", "id", "variable", "value")
-    dfg %>%
-      group_by(site, variable) %>%
-      summarise(m = sum(value),
-              n = n(),
-              theta1 = asin(1 - (2*m + 3/4)/(n + 3/4)),
-              theta2 = asin(1 - (2*m)/(n+1))/2 + asin(1 - (2*m+2)/(n+1))/2) -> tmp
-    if (input$transforamtion == "ATR") {
-      tmp$theta <- tmp$theta1
-    } else {
-      tmp$theta <- tmp$theta2
-    }
-    tmp2 <- tmp[,c("site", "variable", "theta")]
-    tmp2s <- spread(tmp2, variable, theta)
-    tmp3 <- tmp[,c("site", "variable", "n")]
-    tmp3s <- spread(tmp3, variable, n)
-    tmp2s[is.na(tmp2s)] <- 0
-    tmp3s[is.na(tmp3s)] <- 1
-    mat <- as.matrix(dist(tmp2s[,-1]))^2
-    for (i in 1:ncol(mat))
-      for (j in 1:nrow(mat)) {
-#        mat[i,j] <- (sum((tmp2s[i,-1] - tmp2s[j,-1])^2) -
-#                       sum((1/(tmp3s[i,-1]+0.5) + 1/(tmp3s[j,-1]+0.5))))/(ncol(tmp2s) - 1)
-# bez korekty
-        mat[i,j] <- sum((tmp2s[i,-1] - tmp2s[j,-1])^2)/(ncol(tmp2)-1)
-      }
-    colnames(mat) <- tmp2s$site
-    rownames(mat) <- tmp2s$site
-    mat
+    res
   })
 
   # table
@@ -79,14 +49,7 @@ function(input, output) {
       return(grid::grid.text('Please, first upload a file with data'))
     }
     mat <- getDist()
-
-    np <- isoMDS(as.dist(mat), k = 2)$points
-    df <- data.frame(site = rownames(np), x = np[,1], y = np[,2])
-    ggplot(df, aes(x,y)) +
-      geom_point(size=2) +
-      geom_text_repel(aes(label=site)) +
-      xlab("") + ylab("") + theme_classic() +
-      ggtitle("Multidimensional scaling")
+    dentalAffinities::getMDS(mat$MMDMatrix)
   })
 
   # table
@@ -96,9 +59,7 @@ function(input, output) {
       return(grid::grid.text('Please, first upload a file with data'))
     }
     mat <- getDist()
-
-    grupy <- agnes(as.dist(mat), method = "ward")
-    fviz_dend(grupy, rect = TRUE, main = "Ward method")
+    dentalAffinities::getClust(mat$MMDMatrix)
   })
 
   output$textSummary <- renderPrint({
@@ -106,7 +67,7 @@ function(input, output) {
     if (is.null(di)) {
       "Upload data"
     } else {
-      mat <- getDist()
+      mat <- getDist()$MMDMatrix
       print(round(mat, 2))
     }
   })

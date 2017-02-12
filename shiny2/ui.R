@@ -45,10 +45,10 @@ fluidPage(
     column(width = 2,
            p("Options:"),
            selectInput("method_sel", label = "Method selection",
-                       choices = c("MMD - Anscombe" = "MMD_ANS",
+                       choices = c("MMD - Anscombe" = "MMD_ANS_0",
                                    "MMD - Anscombe (Freeman & Tukey correction)" = "MMD_ANS_FRE",
                                    "MMD - Anscombe (Grewal correction)" = "MMD_ANS_GRE",
-                                   "MMD - Freeman & Tukey" = "MMD_FRE",
+                                   "MMD - Freeman & Tukey" = "MMD_FRE_0",
                                    "MMD - Freeman & Tukey (Freeman & Tukey correction)" = "MMD_FRE_FRE",
                                    "MMD - Freeman & Tukey (Grewal correction)" = "MMD_FRE_GRE",
                                    "Mahalanobis - tetrachoric correlation (TMD)" = "MAH_TMD",
@@ -63,16 +63,7 @@ fluidPage(
                                    "Balanced" = "BALANCED",
                                    "Highest inter sample" = "HIGH"
                        ),
-                       selected = "BALANCED"),
-           selectInput("measure", label = "Select distance measure",
-                       choices = c("Mean measure of divergence" = "MMD"
-                                   #"Tetrachoric Mahalanobis D2 distance" = "TMD"
-                       ),
-                       selected = "MMD"),
-          selectInput("transforamtion", label = "How to transform values",
-                      choices = c("Anscombe transformation" = "ATR",
-                                  "Freeman-Tukey transformation" = "FTT"),
-                      selected = "ATR"))
+                       selected = "BALANCED"))
     ),
   fluidRow(
     column(width = 4, plotOutput('ggMDS')),

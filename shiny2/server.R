@@ -1,38 +1,17 @@
 library("shiny")
-library("openxlsx")
-library("rbokeh")
-library("htmlwidgets")
-library("ggplot2")
-library("ggrepel")
-library("grid")
-library("gridExtra")
-library("ggthemes")
-library("dplyr")
-library("tidyr")
-library("MASS")
-library("cluster")
-library("factoextra")
-
-# df <- read.xlsx("../docs/example.xlsx", 1)
-# for (i in 3:ncol(df)) 
-#   df[,i] <- as.numeric(gsub(pattern = "[^0-9]",replacement = "", as.character(df[,i])))
-# df <- df[, apply(df, 2, function(x) length(unique(na.omit(x)))) > 1]
-# save(df, file="df_sample.rda")
+library("dentalAffinities")
 
 function(input, output) {
   # get data
   dataInput <- reactive({
     if (input$button) {
-      load("df_sample.rda")
+      load("df_sample2.rda")
       return(df)
     }
     inFile <- input$file1
     if (is.null(inFile))
       return(NULL)
-    df <- read.xlsx("../docs/example.xlsx", 1)
-    for (i in 3:ncol(df)) 
-      df[,i] <- as.numeric(gsub(pattern = "[^0-9]",replacement = "", as.character(df[,i])))
-    df <- df[, apply(df, 2, function(x) length(unique(na.omit(x)))) > 1]
+    df <- loadData(inFile)
     attr(df, which = "name") = inFile[[1]]
     df
   })
@@ -40,11 +19,30 @@ function(input, output) {
   # get dist
   getDist <- reactive({
     df <- dataInput()
+
+    selected <- strsplit(input$method_sel, split="_")[[1]]
+
+    if (selected[1] == "MMD") {
+      theta <- dentalAffinities::theta_Anscombe
+      if (selected[2] == "FRE")
+        theta <- dentalAffinities::theta_Freeman
+
+      thetadiff <- dentalAffinities::thetadiff_uncorrected
+      if (selected[3] == "FRE")
+        thetadiff <- dentalAffinities::thetadiff_Freeman
+      if (selected[3] == "GRE")
+        thetadiff <- dentalAffinities::thetadiff_Grewal
+
+      tmp <- dentalAffinities::get_Mn_Mp(df)
+      dentalAffinities::calculateMMD(tmp$Mn, tmp$Mp, thetadiff, theta)
+
+    }
+
     for (i in 3:ncol(df))
       df[,i] <- (df[,i] > mean(df[,i], na.rm = TRUE)) + 0
     dfg <- na.omit(gather(df, variables, values, c(-1, -2)))
     colnames(dfg) <- c("site", "id", "variable", "value")
-    dfg %>% 
+    dfg %>%
       group_by(site, variable) %>%
       summarise(m = sum(value),
               n = n(),
@@ -55,25 +53,25 @@ function(input, output) {
     } else {
       tmp$theta <- tmp$theta2
     }
-    tmp2 <- tmp[,c("site", "variable", "theta")] 
+    tmp2 <- tmp[,c("site", "variable", "theta")]
     tmp2s <- spread(tmp2, variable, theta)
-    tmp3 <- tmp[,c("site", "variable", "n")] 
+    tmp3 <- tmp[,c("site", "variable", "n")]
     tmp3s <- spread(tmp3, variable, n)
     tmp2s[is.na(tmp2s)] <- 0
     tmp3s[is.na(tmp3s)] <- 1
     mat <- as.matrix(dist(tmp2s[,-1]))^2
     for (i in 1:ncol(mat))
       for (j in 1:nrow(mat)) {
-#        mat[i,j] <- (sum((tmp2s[i,-1] - tmp2s[j,-1])^2) - 
+#        mat[i,j] <- (sum((tmp2s[i,-1] - tmp2s[j,-1])^2) -
 #                       sum((1/(tmp3s[i,-1]+0.5) + 1/(tmp3s[j,-1]+0.5))))/(ncol(tmp2s) - 1)
-# bez korekty    
+# bez korekty
         mat[i,j] <- sum((tmp2s[i,-1] - tmp2s[j,-1])^2)/(ncol(tmp2)-1)
       }
     colnames(mat) <- tmp2s$site
     rownames(mat) <- tmp2s$site
     mat
   })
-  
+
   # table
   output$ggMDS <- renderPlot({
     di <- dataInput()
@@ -81,11 +79,11 @@ function(input, output) {
       return(grid::grid.text('Please, first upload a file with data'))
     }
     mat <- getDist()
-    
+
     np <- isoMDS(as.dist(mat), k = 2)$points
     df <- data.frame(site = rownames(np), x = np[,1], y = np[,2])
-    ggplot(df, aes(x,y)) + 
-      geom_point(size=2) + 
+    ggplot(df, aes(x,y)) +
+      geom_point(size=2) +
       geom_text_repel(aes(label=site)) +
       xlab("") + ylab("") + theme_classic() +
       ggtitle("Multidimensional scaling")
@@ -98,11 +96,11 @@ function(input, output) {
       return(grid::grid.text('Please, first upload a file with data'))
     }
     mat <- getDist()
-    
+
     grupy <- agnes(as.dist(mat), method = "ward")
     fviz_dend(grupy, rect = TRUE, main = "Ward method")
   })
-  
+
   output$textSummary <- renderPrint({
     di <- dataInput()
     if (is.null(di)) {

@@ -45,6 +45,10 @@ thetadiff_uncorrected <- function(nA,pA,nB,pB, theta) { (theta(nA,pA) - theta(nB
 #' Extracts Mn and Mp matricex from binary data
 #' @param binary_trait_data matrix with binary data
 #' @return List with two matrices for Mn and Mp
+#' @importFrom tidyr spread
+#' @importFrom tidyr gather
+#' @importFrom dplyr summarise
+#' @importFrom dplyr group_by
 #' @export
 get_Mn_Mp <- function(binary_trait_data) {
  colnames(binary_trait_data)[1:3] <- c("id", "site", "sex")

@@ -72,6 +72,9 @@ fluidPage(
            p("Significance matrix"),
            verbatimTextOutput('signifSummary'))
   ),
+  fluidRow(
+    column(width = 4, plotOutput('ggCzekanowski', width = 400, height = 400))
+  ),
   tags$head(tags$style("
       .myRow1{background-color: #dddddd;}
       .myRow3{height:3px; background-color: #dddddd;}

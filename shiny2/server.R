@@ -104,6 +104,14 @@ function(input, output) {
     mat <- getDist()
     dentalAffinities::getMDS(mat$MMDMatrix)
   })
+  output$ggCzekanowski <- renderPlot({
+    di <- dataInput()
+    if (is.null(di)) {
+      return(grid::grid.text('Please, first upload a file with data'))
+    }
+    mat <- getDist()
+    dentalAffinities::getCzekanowski(mat$MMDMatrix)
+  })
 
   # table
   output$ggClust <- renderPlot({

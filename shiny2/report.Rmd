@@ -12,7 +12,30 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Variable statistics
 
-```{r cars, echo=FALSE}
-load("df.rda")
-summary(df)
+```{r, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+library(knitr)
+load("raw_data.rda")
+
+tmp <- df[,-(1:2)]
+for (i in 1:ncol(tmp)) {
+     cat("\n\n## ", colnames(tmp)[i], "\n\n")
+     if (!is.null(THRESHOLD)) {
+       cat("\n\nSelected Threshold for the variable:",THRESHOLD[1,i+2],"\n\n")
+     }
+     if (i != 1) {
+       cutoffs <- sort(unique(na.omit(tmp[,i])))
+       if (length(cutoffs) > 1) {
+         p.vals <- sapply(2:length(cutoffs), function(j) {
+           chisq.test(table(tmp[,i] >= cutoffs[j], df[,2]))$p.value
+         })
+         nam <- paste("<=", cutoffs[-length(cutoffs)], "; >=", cutoffs[-1])
+         ndf <- data.frame(p.vals = sapply(p.vals, function(p) as.character(signif(p, 2))))
+         rownames(ndf) <- nam
+         print(kable(ndf, caption = "P-values for chisq test for different cutoffs."))
+       }
+     }
+     print(kable(
+       addmargins(table(df[,2], tmp[,i])),
+       caption = paste("Number of observations for ", colnames(tmp)[i], "(columns) per site (rows).")))
+}
 ```

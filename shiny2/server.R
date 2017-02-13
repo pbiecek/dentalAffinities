@@ -56,7 +56,7 @@ function(input, output) {
       }
       df <- df[,1:(2 + (i-1)/2)]
     }
-    list(df, THRESHOLD)
+    list(df = df, THRESHOLD = THRESHOLD)
   })
   # get data
   dataInput <- reactive({
@@ -185,7 +185,7 @@ function(input, output) {
         owd <- setwd(td)
         on.exit(setwd(owd))
         file.copy(src, 'report.Rmd', overwrite = TRUE)
-        save(df, file="df.rda")
+        save(df, THRESHOLD, file="raw_data.rda")
 
         library(rmarkdown)
         out <- render('report.Rmd', pdf_document())

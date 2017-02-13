@@ -10,7 +10,7 @@
 #' @import ggplot2
 getMDS <- function(mat, metric = TRUE) {
   if (metric) {
-    np <- cmdscale(as.dist(mat), k = 2)$points
+    np <- cmdscale(as.dist(mat), k = 2)
   } else {
     np <- isoMDS(as.dist(mat), k = 2)$points
   }

@@ -5,8 +5,7 @@ library("openxlsx")
 library("ggbiplot")
 
 function(input, output) {
-  # get data
-  dataInput <- reactive({
+  rawdataInput <- reactive({
     inFile <- input$file1
     if (input$button & is.null(inFile)) {
       load("df_sample2.rda")
@@ -17,8 +16,8 @@ function(input, output) {
       attr(df, which = "name") = inFile[[1]]
     }
     # binarisation
+    THRESHOLD = df[1,]
     if (input$binarisation == "USER") {
-      THRESHOLD = df[1,]
       df <- df[-1,]
     }
 
@@ -39,21 +38,33 @@ function(input, output) {
     if (input$init_trait == "MIN") {
       for (i in seq(5, ncol(df), 2)) {
         df[,2 + (i-1)/2] <- pmin(df[,i], df[,i-1], na.rm = TRUE)
+        colnames(df)[2 + (i-1)/2] <- colnames(df)[i]
       }
       df <- df[,1:(2 + (i-1)/2)]
     }
     if (input$init_trait == "MAX") {
       for (i in seq(5, ncol(df), 2)) {
         df[,2 + (i-1)/2] <- pmax(df[,i], df[,i-1], na.rm = TRUE)
+        colnames(df)[2 + (i-1)/2] <- colnames(df)[i]
       }
       df <- df[,1:(2 + (i-1)/2)]
     }
     if (input$init_trait == "AVG") {
       for (i in seq(5, ncol(df), 2)) {
         df[,2 + (i-1)/2] <- rowMeans(df[,i+c(-1,0)], na.rm = TRUE)
+        colnames(df)[2 + (i-1)/2] <- colnames(df)[i]
       }
       df <- df[,1:(2 + (i-1)/2)]
     }
+    list(df, THRESHOLD)
+  })
+  # get data
+  dataInput <- reactive({
+    ll <- rawdataInput()
+    if (is.null(ll)) return(NULL)
+    df <- ll$df
+    THRESHOLD <- ll$THRESHOLD
+
     # binarisation
     if (input$binarisation == "USER") {
       for (i in 4:ncol(df)) {
@@ -67,7 +78,6 @@ function(input, output) {
         df[,i] <- (df[,i] >= median(df[,i], na.rm=TRUE)) + 0
       }
     }
-
     df
   })
 
@@ -158,6 +168,31 @@ function(input, output) {
       print(round(mat, 5))
     }
   })
+
+  output$downloadReport <- downloadHandler(
+    filename = function() {
+      paste('dentalAffinities_diagnostic_', Sys.Date(), '.pdf', sep='')
+    },
+    content = function(con) {
+      ll <- rawdataInput()
+      if (!is.null(ll)) {
+        df <- ll$df
+        THRESHOLD <- ll$THRESHOLD
+
+        src <- normalizePath('report.Rmd')
+        td <- tempdir()
+        print(td)
+        owd <- setwd(td)
+        on.exit(setwd(owd))
+        file.copy(src, 'report.Rmd', overwrite = TRUE)
+        save(df, file="df.rda")
+
+        library(rmarkdown)
+        out <- render('report.Rmd', pdf_document())
+        file.rename(out, con)
+      }
+    }
+  )
 
   output$downloadFigures <- downloadHandler(
     filename = function() {

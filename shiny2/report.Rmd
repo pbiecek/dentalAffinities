@@ -1,0 +1,18 @@
+---
+title: "Dental Affinities Report"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+author: URL_to_the_website
+output: pdf_document
+toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Variable statistics
+
+```{r cars, echo=FALSE}
+load("df.rda")
+summary(df)
+```

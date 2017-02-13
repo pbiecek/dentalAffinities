@@ -1,13 +1,19 @@
 #' Create a MDS diagram for given distance matrix
 #'
 #' @param mat distance matrix
+#' @param metric metric (cmdscale) or non metric (isoMDS) scaling?
 #'
 #' @return ggplot2 plot
 #' @export
 #' @importFrom MASS isoMDS
+#' @importFrom stats cmdscale
 #' @import ggplot2
-getMDS <- function(mat) {
-  np <- isoMDS(as.dist(mat), k = 2)$points
+getMDS <- function(mat, metric = TRUE) {
+  if (metric) {
+    np <- cmdscale(as.dist(mat), k = 2)$points
+  } else {
+    np <- isoMDS(as.dist(mat), k = 2)$points
+  }
   df <- data.frame(site = rownames(np), x = np[,1], y = np[,2])
   ggplot(df, aes(x,y)) +
     geom_point(size = 2) +

@@ -4,10 +4,12 @@
 \alias{getMDS}
 \title{Create a MDS diagram for given distance matrix}
 \usage{
-getMDS(mat)
+getMDS(mat, metric = TRUE)
 }
 \arguments{
 \item{mat}{distance matrix}
+
+\item{metric}{metric (cmdscale) or non metric (isoMDS) scaling?}
 }
 \value{
 ggplot2 plot

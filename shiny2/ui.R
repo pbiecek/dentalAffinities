@@ -73,7 +73,8 @@ fluidPage(
            verbatimTextOutput('signifSummary'))
   ),
   fluidRow(
-    column(width = 4, plotOutput('ggCzekanowski', width = 400, height = 400))
+    column(width = 4, plotOutput('ggCzekanowski', width = 400, height = 400)),
+    column(width = 4, plotOutput('ggPCA', width = 400, height = 400))
   ),
   tags$head(tags$style("
       .myRow1{background-color: #dddddd;}

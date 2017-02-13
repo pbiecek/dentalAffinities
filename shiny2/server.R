@@ -2,6 +2,7 @@ library("shiny")
 library("dentalAffinities")
 library("MASS")
 library("openxlsx")
+library("ggbiplot")
 
 function(input, output) {
   # get data
@@ -111,6 +112,13 @@ function(input, output) {
     }
     mat <- getDist()
     dentalAffinities::getCzekanowski(mat$MMDMatrix)
+  })
+  output$ggPCA <- renderPlot({
+    di <- dataInput()
+    if (is.null(di)) {
+      return(grid::grid.text('Please, first upload a file with data'))
+    }
+    dentalAffinities::getPCA(di)
   })
 
   # table

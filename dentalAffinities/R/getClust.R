@@ -11,5 +11,6 @@
 getClust <- function(mat) {
   grupy <- agnes(as.dist(mat), method = "ward")
   dg <- as.dendrogram(grupy)
-  ggdendrogram(dg)
+  ggdendrogram(dg) +
+    ggtitle("Dendrogram - Ward Method") + theme_classic() + xlab("") + ylab("")
 }

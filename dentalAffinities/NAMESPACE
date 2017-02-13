@@ -2,6 +2,7 @@
 
 export(calculateMMD)
 export(getClust)
+export(getCzekanowski)
 export(getMDS)
 export(get_Mn_Mp)
 export(loadData)

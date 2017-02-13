@@ -61,20 +61,25 @@ fluidPage(
                        selected = "ALL"))
     ),
   fluidRow(
-    column(width = 4, plotOutput('ggMDS', width = 400, height = 400)),
-    column(width = 4, plotOutput('ggClust', width = 400, height = 400)),
+    column(width = 4,
+           plotOutput('ggMDS', width = 400, height = 400),
+           plotOutput('ggCzekanowski', width = 400, height = 400)
+           ),
+    column(width = 4,
+           plotOutput('ggClust', width = 400, height = 400),
+           plotOutput('ggPCA', width = 400, height = 400)),
     column(width = 4,
            downloadLink('downloadData', '* Download matrixes as XLSX file *'),
+           br(),
+           downloadLink('downloadFigures', '* Download figures as PDF files *'),
+           br(),
+           br(),
            p("Distance matrix"),
            verbatimTextOutput('distSummary'),
            p("SD matrix"),
            verbatimTextOutput('sdSummary'),
            p("Significance matrix"),
            verbatimTextOutput('signifSummary'))
-  ),
-  fluidRow(
-    column(width = 4, plotOutput('ggCzekanowski', width = 400, height = 400)),
-    column(width = 4, plotOutput('ggPCA', width = 400, height = 400))
   ),
   tags$head(tags$style("
       .myRow1{background-color: #dddddd;}

@@ -159,6 +159,26 @@ function(input, output) {
     }
   })
 
+  output$downloadFigures <- downloadHandler(
+    filename = function() {
+      paste('dentalAffinities_', Sys.Date(), '.pdf', sep='')
+    },
+    content = function(con) {
+      di <- dataInput()
+      if (!is.null(di)) {
+        pdf(file = con, width = 10, height = 10)
+        mat <- getDist()
+
+        print(dentalAffinities::getClust(mat$MMDMatrix))
+        print(dentalAffinities::getMDS(mat$MMDMatrix))
+        print(dentalAffinities::getCzekanowski(mat$MMDMatrix))
+        print(dentalAffinities::getPCA(di))
+
+        dev.off()
+      }
+    }
+  )
+
   output$downloadData <- downloadHandler(
     filename = function() {
       paste('dentalAffinities_', Sys.Date(), '.xlsx', sep='')

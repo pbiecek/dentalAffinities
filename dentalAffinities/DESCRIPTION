@@ -15,4 +15,5 @@ Imports: openxlsx,
     ggplot2,
     MASS,
     cluster,
-    ggdendro
+    ggdendro,
+    psych

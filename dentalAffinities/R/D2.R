@@ -1,6 +1,7 @@
 #' Calcuate Mahalanobis D2 Measures
 #'
-#' Base on Lyle W. Konigsberg (tdistR.zip) http://lylek.ucoz.org/index.html
+#' Based on Lyle W. Konigsberg scripts (tdistR.zip) http://lylek.ucoz.org/index.html
+#' with some additional cleaning and regularisation
 #'
 #' @export
 calculateD2 <- function(binary_trait_data) {

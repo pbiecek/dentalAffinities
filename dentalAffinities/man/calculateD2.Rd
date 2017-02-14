@@ -7,6 +7,7 @@
 calculateD2(binary_trait_data)
 }
 \description{
-Base on Lyle W. Konigsberg (tdistR.zip) http://lylek.ucoz.org/index.html
+Based on Lyle W. Konigsberg scripts (tdistR.zip) http://lylek.ucoz.org/index.html
+with some additional cleaning and regularisation
 }
 

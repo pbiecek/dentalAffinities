@@ -102,7 +102,9 @@ function(input, output) {
       tmp <- dentalAffinities::get_Mn_Mp(df)
       res <- dentalAffinities::calculateMMD(data.frame(tmp$Mn), as.data.frame(tmp$Mp), thetadiff, theta)
     }
-
+    if (selected[1] == "MAH") {
+      res <- dentalAffinities::calculateD2(df)
+    }
     res
   })
 
@@ -156,7 +158,11 @@ function(input, output) {
       "Upload data"
     } else {
       mat <- getDist()$SDMatrix
-      print(round(mat, 2))
+      if (is.null(mat)) {
+        print("SD matrix not is available")
+      } else {
+        print(round(mat, 2))
+      }
     }
   })
   output$signifSummary <- renderPrint({
@@ -165,7 +171,11 @@ function(input, output) {
       "Upload data"
     } else {
       mat <- getDist()$SigMatrix
-      print(round(mat, 5))
+      if (is.null(mat)) {
+        print("P-values matrix not is available")
+      } else {
+        print(round(mat, 5))
+      }
     }
   })
 

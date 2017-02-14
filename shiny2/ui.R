@@ -17,11 +17,7 @@ fluidPage(
                                    "MMD - Anscombe (Grewal correction)" = "MMD_ANS_GRE",
                                    "MMD - Freeman & Tukey (Freeman & Tukey correction)" = "MMD_FRE_FRE",
                                    "MMD - Freeman & Tukey (Grewal correction)" = "MMD_FRE_GRE",
-                                   "[not ready] Mahalanobis - tetrachoric correlation (TMD)" = "MAH_TMD",
-                                   "[not ready] Mahalanobis - ordinal (OMD)" = "MAH_OMD",
-                                   "[not ready] Mahalanobis - corrected ordinal (COMD)" = "MAH_COMD",
-                                   "[not ready] Mahalanobis - Pearson correlation coefficients (RMD)" = "MAH_RMD",
-                                   "[not ready] PCA - polychoric correlation " = "MAH_PCA"
+                                   "Mahalanobis - tetrachoric correlation (TMD)" = "MAH_TMD"
                        ),
                        selected = "MMD_ANS"),
            fileInput('file1', 'Upload your data as an XLSX file',

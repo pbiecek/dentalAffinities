@@ -55,9 +55,9 @@ get_Mn_Mp <- function(binary_trait_data) {
  binary_trait_data_long <- gather(binary_trait_data, trait, value, -(1:3))
  gr <- summarise(group_by(binary_trait_data_long, site, trait),
            n = length(na.omit(value)),
-           p = mean(value > 0, na.rm=TRUE))
+           p = ifelse(n>0, mean(value > 0, na.rm=TRUE),0.5))
  Mn <- spread(gr[,c("site","trait", "n")], trait, n)
  Mp <- spread(gr[,c("site","trait", "p")], trait, p)
- Mp[is.nan(Mp)] = 0.5
+
  list(Mn = Mn, Mp = Mp)
 }

@@ -4,12 +4,24 @@
 #'
 #' @export
 calculateD2 <- function(binary_trait_data) {
+  # remove columns with wrong data (only NA or 1)
+  idx <- c(1:3,which(apply(binary_trait_data[,-(1:3)], 2, function(x) length(unique(na.omit(x)))) > 1) + 3)
+  binary_trait_data <- binary_trait_data[,idx]
+  # stop
   colnames(binary_trait_data)[1:3] <- c("id", "site", "sex")
   X <- binary_trait_data[,-(1:3)]
   tmp <- dentalAffinities::get_Mn_Mp(binary_trait_data[!is.na(binary_trait_data$site),])
   Sites <- tmp[[1]][1]
-  n0 = tmp[[1]][-1]*tmp[[2]][-1]
-  n1 = tmp[[1]][-1]*(1-tmp[[2]][-1])
+  Mn <- tmp[[1]][-1]
+  Mp <- tmp[[2]][-1]
+  # remove traits with 0 observations
+  idx <- which(!apply(Mn == 0, 2, any))
+  X <- X[,idx]
+  Mn <- Mn[,idx]
+  Mp <- Mp[,idx]
+
+  n0 = Mn*Mp
+  n1 = Mn*(1-Mp)
   # correction for 0
   n0[n1 == 0] = n0[n1 == 0] - 0.5
   n1[n1 == 0] = .5

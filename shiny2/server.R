@@ -233,7 +233,22 @@ function(input, output) {
       if (is.null(di)) {
         mat <- data.frame("Upload the data first")
       } else {
+        rdi <- rawdataInput()
+
         mat <- getDist()
+        tmp <- dentalAffinities::get_Mn_Mp(di)
+        tmpN <- t(tmp[[1]])
+        colnames(tmpN) <- paste(tmpN[1,], " (N)")
+        tmpP <- t(data.frame(tmp[[2]][,1], round(tmp[[2]][,-1], 3)))
+        colnames(tmpP) <- paste(tmpP[1,], " (prc)")
+        tmp2 <- cbind(tmpN[-1,], tmpP[-1,])
+        tmp3 <- apply(tmp2, 2, as.numeric)
+        rownames(tmp3) <- rownames(tmp2)
+        mat$Counts_in_sites <- tmp3
+        stats <- getCutoffStats(rdi$df)
+        mat$Cutoff_statistics <- stats
+        freq <- getSummaryStatistics(rdi$df)
+        mat$Frequencies <- freq
         write.xlsx(mat, file = con, row.names = TRUE)
       }
     }

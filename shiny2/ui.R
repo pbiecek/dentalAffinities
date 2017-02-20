@@ -65,7 +65,7 @@ fluidPage(
            plotOutput('ggClust', width = 400, height = 400),
            plotOutput('ggPCA', width = 400, height = 400)),
     column(width = 4,
-           downloadLink('downloadData', '* Download matrixes as an XLSX file *'),
+           downloadLink('downloadData', '* Download matrices in a single XLSX file *'),
            br(),
            downloadLink('downloadFigures', '* Download figures as an PDF file *'),
            br(),

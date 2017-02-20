@@ -4,6 +4,43 @@ library("MASS")
 library("openxlsx")
 library("ggbiplot")
 
+method_sel <- c("MMD - Anscombe" = "MMD_ANS_0",
+  "MMD - Freeman & Tukey" = "MMD_FRE_0",
+  "MMD - Anscombe (Freeman & Tukey correction)" = "MMD_ANS_FRE",
+  "MMD - Anscombe (Grewal correction)" = "MMD_ANS_GRE",
+  "MMD - Freeman & Tukey (Freeman & Tukey correction)" = "MMD_FRE_FRE",
+  "MMD - Freeman & Tukey (Grewal correction)" = "MMD_FRE_GRE",
+  "Mahalanobis - tetrachoric correlation (TMD)" = "MAH_TMD"
+)
+
+sex_handling <- c("All individuals" = "ALL",
+  "Males only" = "MALE",
+  "Females only" = "FEMALE",
+  "[not ready] Sample-wise selection" = "SAMPLE",
+  "[not ready] Predefined selection" = "PRE"
+)
+
+binarisation <- c("User defined" = "USER",
+                  "Balanced" = "BALANCED",
+                  "[not ready] Highest inter sample" = "HIGH"
+)
+
+init_trait <- c("All traits" = "ALL",
+                "Only right side" = "RIGHT",
+                "Only left side" = "LEFT",
+                "Maximum score" = "MAX",
+                "Minimum score" = "MIN",
+                "Average score" = "AVG"
+)
+
+post_trait <- c("All traits" = "ALL",
+                "[not ready] Traits that differentiate" = "DIFF",
+                "[not ready] Traits with high inter-sample variance" = "VAR"
+)
+
+
+
+
 function(input, output) {
   rawdataInput <- reactive({
     inFile <- input$file1
@@ -233,9 +270,27 @@ function(input, output) {
       if (is.null(di)) {
         mat <- data.frame("Upload the data first")
       } else {
-        rdi <- rawdataInput()
+      rdi <- rawdataInput()
 
-        mat <- getDist()
+        # basic stats
+        parameter = c("File name",
+                      "Method",
+                      "Sex handling",
+                      "Binarization",
+                      "Initial trait selection",
+                      "Post-hoc trait selection",
+                      "Date")
+        value = c(ifelse(is.null(input$file1), "Example data", input$file1[[1]]),
+                  names(which(input$method_sel == method_sel)),
+                  names(which(input$sex_handling == sex_handling)),
+                  names(which(input$binarisation == binarisation)),
+                  names(which(input$init_trait == init_trait)),
+                  names(which(input$post_trait == post_trait)),
+                  date())
+
+        df <- list(parameter=parameter,
+                         value=value)
+        mat <- list(Basic_Statics = df, Thresholds = t(rdi$THRESHOLD))
         tmp <- dentalAffinities::get_Mn_Mp(di)
         tmpN <- t(tmp[[1]])
         colnames(tmpN) <- paste(tmpN[1,], " (N)")
@@ -249,6 +304,9 @@ function(input, output) {
         mat$Cutoff_statistics <- stats
         freq <- getSummaryStatistics(rdi$df)
         mat$Frequencies <- freq
+        mat2 <- getDist()
+        mat <- c(mat, mat2)
+
         write.xlsx(mat, file = con, row.names = TRUE)
       }
     }

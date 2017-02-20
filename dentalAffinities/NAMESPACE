@@ -3,6 +3,7 @@
 export(calculateD2)
 export(calculateMMD)
 export(getClust)
+export(getCutoffStats)
 export(getCzekanowski)
 export(getMDS)
 export(getPCA)

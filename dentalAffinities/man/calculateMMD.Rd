@@ -4,7 +4,7 @@
 \alias{calculateMMD}
 \title{Calcuate MMD Measures}
 \usage{
-calculateMMD(M_n, M_p, thetadiff, theta)
+calculateMMD(M_n, M_p, thetadiff, theta, deltamin = 0.01)
 }
 \arguments{
 \item{M_n}{Matrix with number of observations for each trait and each site}
@@ -14,6 +14,8 @@ calculateMMD(M_n, M_p, thetadiff, theta)
 \item{thetadiff}{Function for correction of the MMD}
 
 \item{theta}{Function for MMD calculations}
+
+\item{deltamin}{will replace any negative distance}
 }
 \value{
 a list with tree matrices: MMDMatrix - distance, SDMatrix - standard deviation, SigMatrix - significance

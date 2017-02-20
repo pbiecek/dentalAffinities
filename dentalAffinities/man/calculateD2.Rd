@@ -4,7 +4,12 @@
 \alias{calculateD2}
 \title{Calcuate Mahalanobis D2 Measures}
 \usage{
-calculateD2(binary_trait_data)
+calculateD2(binary_trait_data, deltamin = 0.01)
+}
+\arguments{
+\item{binary_trait_data}{a data frame with binary data}
+
+\item{deltamin}{will replace any negative distance}
 }
 \description{
 Based on Lyle W. Konigsberg scripts (tdistR.zip) http://lylek.ucoz.org/index.html

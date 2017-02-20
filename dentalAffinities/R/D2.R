@@ -3,8 +3,11 @@
 #' Based on Lyle W. Konigsberg scripts (tdistR.zip) http://lylek.ucoz.org/index.html
 #' with some additional cleaning and regularisation
 #'
+#' @param binary_trait_data a data frame with binary data
+#' @param deltamin will replace any negative distance
+#'
 #' @export
-calculateD2 <- function(binary_trait_data) {
+calculateD2 <- function(binary_trait_data, deltamin= 0.01) {
   # remove columns with wrong data (only NA or 1)
   idx <- c(1:3,which(apply(binary_trait_data[,-(1:3)], 2, function(x) length(unique(na.omit(x)))) > 1) + 3)
   binary_trait_data <- binary_trait_data[,idx]
@@ -97,6 +100,9 @@ calculateD2 <- function(binary_trait_data) {
   Delta = (I - o %*% t(w)) %*% z
   Cp = Delta %*% solve(R) %*% t(Delta)
   D2 = (Cp*I) %*% J + J %*% (Cp*I) - 2*Cp
+
+  # replace negative values
+  D2[D2 <= 0] <- deltamin
 
   rownames(D2) = Sites$site
   colnames(D2) = Sites$site

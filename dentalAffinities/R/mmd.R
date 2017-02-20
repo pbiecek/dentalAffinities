@@ -6,10 +6,11 @@
 #' @param M_p Matrix with proportions for each trait and each site
 #' @param thetadiff Function for correction of the MMD
 #' @param theta Function for MMD calculations
+#' @param deltamin will replace any negative distance
 #'
 #' @return a list with tree matrices: MMDMatrix - distance, SDMatrix - standard deviation, SigMatrix - significance
 #' @export
-calculateMMD <- function(M_n, M_p, thetadiff, theta) {
+calculateMMD <- function(M_n, M_p, thetadiff, theta, deltamin = 0.01) {
   # remove traits with n == 0
   ind <- which(!apply(M_n == 0, 2, any))
   M_p <- M_p[,ind]
@@ -23,7 +24,7 @@ calculateMMD <- function(M_n, M_p, thetadiff, theta) {
     for (b in seq_along(MMDMatrix[, 1])) {
       for (c in seq_along(MMDMatrix[1, ])) {
         tmp <- thetadiff(M_n[b,a+1], M_p[b,a+1], M_n[c,a+1], M_p[c,a+1], theta)
-        tmp <- pmax(tmp, 0.01)
+        tmp <- pmax(tmp, deltamin)
         MMDMatrix[b,c] <- tmp
       }
     }

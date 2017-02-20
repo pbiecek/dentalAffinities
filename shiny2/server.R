@@ -39,8 +39,6 @@ post_trait <- c("All traits" = "ALL",
 )
 
 
-
-
 function(input, output) {
   rawdataInput <- reactive({
     inFile <- input$file1
@@ -52,19 +50,7 @@ function(input, output) {
       df <- loadData(inFile$datapath)
       attr(df, which = "name") = inFile[[1]]
     }
-    # binarisation
-    THRESHOLD = df[1,]
-    if (input$binarisation == "USER") {
-      df <- df[-1,]
-    }
 
-    # sex handling
-    if (input$sex_handling == "MALE") {
-      df <- df[which(df[,3] == "M"),]
-    }
-    if (input$sex_handling == "FEMALE") {
-      df <- df[which(df[,3] == "F"),]
-    }
     # side handling
     if (input$init_trait == "RIGHT") {
       df <- df[,c(1:3,seq(4, ncol(df), 2))]
@@ -93,6 +79,47 @@ function(input, output) {
       }
       df <- df[,1:(2 + (i-1)/2)]
     }
+
+    # binarisation
+    THRESHOLD = df[1,]
+    if (input$binarisation == "USER") {
+      df <- df[-1,]
+    }
+
+    # sex handling
+    if (input$sex_handling == "MALE") {
+      df <- df[which(df[,3] == "M"),]
+    }
+    if (input$sex_handling == "FEMALE") {
+      df <- df[which(df[,3] == "F"),]
+    }
+
+    # binarisation
+    if (input$binarisation == "BALANCED") {
+      THRESHOLD = df[1,]
+      for (i in 4:ncol(df)) {
+        THRESHOLD[1,i] <- median(df[,i], na.rm=TRUE)
+      }
+    }
+
+    if (input$binarisation == "HIGH") {
+      THRESHOLD = df[1,]
+      for (i in 4:ncol(df)) {
+        cutoffs <- sort(unique(na.omit(df[,i])))
+        if (length(cutoffs) > 1) {
+          p.vals <- sapply(2:length(cutoffs), function(j) {
+              chisq.test(table(df[,i] >= cutoffs[j], df[,2]))$statistic[[1]]
+          })
+          if (any(is.nan(p.vals)))
+            p.vals[is.nan(p.vals)] = 1
+          THRESHOLD[1,i] <- cutoffs[which.max(p.vals)+1]
+        } else {
+          THRESHOLD[1,i] <- median(df[,i], na.rm=TRUE)
+        }
+      }
+
+    }
+
     list(df = df, THRESHOLD = THRESHOLD)
   })
   # get data
@@ -101,18 +128,13 @@ function(input, output) {
     if (is.null(ll)) return(NULL)
     df <- ll$df
     THRESHOLD <- ll$THRESHOLD
+    # remove without site
+    df <- df[!is.na(df[,2]),]
 
     # binarisation
-    if (input$binarisation == "USER") {
+    if (input$binarisation %in% c("USER", "BALANCED", "HIGH")) {
       for (i in 4:ncol(df)) {
         df[,i] <- (df[,i] >= THRESHOLD[1,i]) + 0
-      }
-    }
-    if (input$binarisation == "BALANCED") {
-      # remove without site
-      df <- df[!is.na(df[,2]),]
-      for (i in 4:ncol(df)) {
-        df[,i] <- (df[,i] >= median(df[,i], na.rm=TRUE)) + 0
       }
     }
     df
@@ -228,7 +250,6 @@ function(input, output) {
 
         src <- normalizePath('report.Rmd')
         td <- tempdir()
-        print(td)
         owd <- setwd(td)
         on.exit(setwd(owd))
         file.copy(src, 'report.Rmd', overwrite = TRUE)
@@ -290,7 +311,7 @@ function(input, output) {
 
         df <- list(parameter=parameter,
                          value=value)
-        mat <- list(Basic_Statics = df, Thresholds = t(rdi$THRESHOLD))
+        mat <- list(Basic_Statics = df, Thresholds = t(rdi$THRESHOLD[1,-(1:3)]))
         tmp <- dentalAffinities::get_Mn_Mp(di)
         tmpN <- t(tmp[[1]])
         colnames(tmpN) <- paste(tmpN[1,], " (N)")

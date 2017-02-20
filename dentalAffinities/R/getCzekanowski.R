@@ -9,7 +9,7 @@
 #' @export
 getCzekanowski <- function(mat) {
   # permute
-  np <- isoMDS(as.dist(mat), k = 1)$points
+  np <- cmdscale(as.dist(mat), k = 1)
   ord <- names(np[order(np[,1]),])
   mat <- mat[order(np[,1]), order(np[,1])]
 

@@ -14,7 +14,8 @@ calculateD2 <- function(binary_trait_data, deltamin= 0.01) {
   # stop
   colnames(binary_trait_data)[1:3] <- c("id", "site", "sex")
   X <- binary_trait_data[,-(1:3)]
-  tmp <- dentalAffinities::get_Mn_Mp(binary_trait_data[!is.na(binary_trait_data$site),])
+  binary_trait_data <- binary_trait_data[!is.na(binary_trait_data$site),]
+  tmp <- dentalAffinities::get_Mn_Mp(binary_trait_data)
   Sites <- tmp[[1]][1]
   Mn <- tmp[[1]][-1]
   Mp <- tmp[[2]][-1]

@@ -23,4 +23,3 @@ corrected theta MMD
 \description{
 Uncorrected formula
 }
-

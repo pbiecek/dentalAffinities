@@ -18,4 +18,3 @@ following columns shall contain trait scores in ordered scale.
 Moreover, it is assumed, that the second row is names THRESHOLD
 and contains cut off values.
 }
-

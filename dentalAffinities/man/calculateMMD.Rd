@@ -21,4 +21,3 @@ a list with tree matrices: MMDMatrix - distance, SDMatrix - standard deviation, 
 \description{
 Base on Arkadiusz Soltysiak ,,Technical Note: An R script for Smith's Mean Measure of Divergence''
 }
-

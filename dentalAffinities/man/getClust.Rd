@@ -15,4 +15,3 @@ ggplot2 plot
 \description{
 Create a clustering diagram for given distance matrix
 }
-

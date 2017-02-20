@@ -17,4 +17,3 @@ ggplot2 plot
 \description{
 Create a MDS diagram for given distance matrix
 }
-

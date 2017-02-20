@@ -17,4 +17,3 @@ theta MMD
 \description{
 Freeman & Tukey transformation
 }
-

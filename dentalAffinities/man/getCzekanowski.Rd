@@ -15,4 +15,3 @@ ggplot2 plot
 \description{
 Based on Czekanowski diagrams as described in http://antropologia.uw.edu.pl/MaCzek/maczek.html
 }
-

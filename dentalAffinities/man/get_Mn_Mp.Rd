@@ -15,4 +15,3 @@ List with two matrices for Mn and Mp
 \description{
 Extracts Mn and Mp matricex from binary data
 }
-

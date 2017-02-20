@@ -15,4 +15,3 @@ ggplot2 plot
 \description{
 Create a PCA biplot
 }
-

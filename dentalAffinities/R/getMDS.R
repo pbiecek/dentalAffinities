@@ -20,7 +20,7 @@ getMDS <- function(mat, metric = TRUE) {
     geom_point(size = 2) +
     scale_x_continuous(expand = c(0.05,0.05), limits = xlim) +
     scale_y_continuous(expand = c(0.05,0.05), limits = xlim) +
-    coord_fixed() +
+    coord_fixed(xlim = xlim, ylim = xlim) +
     geom_text(aes(label = site), vjust = -0.3) +
     xlab("") + ylab("") + theme_classic() +
     ggtitle("MDS diagram")
